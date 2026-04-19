@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hệ Thống Quản Lý Đơn Hàng ERP</title>
     
-    <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +13,6 @@
         :root { --sidebar-width: 260px; --primary-color: #0d6efd; --dark-bg: #1e1e2d; }
         body { font-family: 'Inter', sans-serif; background-color: #f4f7fe; margin: 0; overflow-x: hidden; }
 
-        /* Sidebar */
         .sidebar {
             width: var(--sidebar-width); height: 100vh; background-color: var(--dark-bg);
             color: #a2a3b7; position: fixed; left: 0; top: 0; padding-top: 20px; z-index: 1000;
@@ -24,7 +22,6 @@
         .sidebar a:hover, .sidebar a.active { color: white; background-color: #2b2b40; border-left-color: var(--primary-color); }
         .sidebar a i { margin-right: 15px; font-size: 1.2rem; }
 
-        /* Main Content */
         .main-content { margin-left: var(--sidebar-width); padding: 30px; transition: all 0.3s; }
         .top-nav {
             background: white; padding: 15px 30px; margin: -30px -30px 30px -30px;
@@ -32,14 +29,10 @@
         }
 
         .card { border: none; border-radius: 12px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); margin-bottom: 25px; }
-        .table thead th { background-color: #f8f9fa; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; color: #6c757d; }
-        
         #loading-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(255,255,255,0.7); z-index: 9999; justify-content: center; align-items: center; 
         }
-        
-        .btn-create { background: var(--primary-color); color: white; font-weight: 600; border-radius: 8px; padding: 10px 20px; }
         
         @media (max-width: 768px) {
             .sidebar { width: 0; overflow: hidden; }
@@ -52,82 +45,62 @@
     <div id="loading-overlay">
         <div class="text-center">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 fw-bold">Đang xử lý dữ liệu...</p>
+            <p class="mt-2 fw-bold">Đang xử lý...</p>
         </div>
     </div>
 
     <!-- Sidebar -->
     <div class="sidebar">
-        <div class="sidebar-header text-center">
-            <i class="bi bi-box-seam me-2"></i> HỆ THỐNG ERP
-        </div>
+        <div class="sidebar-header text-center">HỆ THỐNG ERP</div>
         <a href="#" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
-        <a href="#"><i class="bi bi-cart-check"></i> Quản lý đơn hàng</a>
-        <a href="#"><i class="bi bi-house-door"></i> Quản lý kho</a>
+        <a href="#"><i class="bi bi-cart-check"></i> Đơn hàng</a>
+        <a href="#"><i class="bi bi-house-door"></i> Kho hàng</a>
         <a href="#"><i class="bi bi-people"></i> Khách hàng</a>
-        <div class="mt-5 px-4 small text-uppercase" style="font-size: 10px; color: #555; letter-spacing: 1px;">Phiên bản hệ thống</div>
-        <div class="px-4 py-2 small" style="color: #eee;">
-            <div class="fw-bold">Administrator</div>
-            <div>V.1.0.0</div>
-        </div>
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
         <nav class="top-nav">
-            <h5 class="mb-0 fw-bold text-dark">Hệ Thống Quản Lý Đơn Hàng</h5>
+            <h5 class="mb-0 fw-bold">Quản Lý Đơn Hàng</h5>
             <div class="d-flex align-items-center">
-                <span class="me-3 d-none d-md-inline text-muted">Chào mừng quay trở lại!</span>
                 <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" class="rounded-circle shadow-sm" width="35">
             </div>
         </nav>
 
-        <!-- Stats Section -->
         <div class="row mb-4">
-            <div class="col-md-6 col-xl-4">
+            <div class="col-md-4">
                 <div class="card p-3">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
-                            <i class="bi bi-bag-check text-primary fs-3"></i>
-                        </div>
-                        <div>
-                            <p class="text-muted mb-0 small fw-medium">Tổng Đơn Hàng</p>
-                            <h3 class="mb-0 fw-bold" id="totalOrders">0</h3>
-                        </div>
-                    </div>
+                    <p class="text-muted mb-0 small">Tổng đơn hàng</p>
+                    <h3 class="mb-0 fw-bold" id="totalOrders">0</h3>
                 </div>
             </div>
-            <div class="col-md-6 col-xl-8 text-end d-flex align-items-center justify-content-end">
-                <button class="btn btn-create shadow-sm border-0" data-bs-toggle="modal" data-bs-target="#orderModal">
-                    <i class="bi bi-plus-lg me-2"></i> Tạo Vận Đơn Mới
+            <div class="col-md-8 text-end">
+                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#orderModal">
+                    <i class="bi bi-plus-lg me-2"></i> Tạo Đơn Mới
                 </button>
             </div>
         </div>
 
-        <!-- Order Table -->
         <div class="card">
-            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                <h6 class="m-0 fw-bold text-dark"><i class="bi bi-list-ul me-2"></i>Danh sách vận đơn</h6>
-                <button class="btn btn-sm btn-light border" onclick="loadData()">
-                    <i class="bi bi-arrow-clockwise me-1"></i> Làm mới
-                </button>
+            <div class="card-header bg-white py-3 border-bottom">
+                <h6 class="m-0 fw-bold text-dark">Danh sách vận đơn gần đây</h6>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead>
+                        <thead class="table-light">
                             <tr>
                                 <th class="ps-4">Ngày tạo</th>
-                                <th>Mã đơn hàng</th>
-                                <th>Tên khách hàng</th>
-                                <th>Địa chỉ nhận</th>
-                                <th>Số điện thoại</th>
-                                <th>Ghi chú</th>
-                                <th class="pe-4 text-center">Thao tác</th>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Sản phẩm</th>
+                                <th>Trạng thái</th>
+                                <th>Tổng tiền</th>
+                                <th class="pe-4 text-center">Xóa</th>
                             </tr>
                         </thead>
                         <tbody id="data-table">
-                            <tr><td colspan="7" class="text-center p-5 text-muted">Đang kết nối API Google Sheets...</td></tr>
+                            <tr><td colspan="7" class="text-center p-5">Đang tải dữ liệu...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -135,41 +108,33 @@
         </div>
     </div>
 
-    <!-- Modal Form -->
+    <!-- Modal -->
     <div class="modal fade" id="orderModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-primary text-white p-4">
-                    <h5 class="modal-title fw-bold">NHẬP THÔNG TIN VẬN ĐƠN</h5>
+        <div class="modal-dialog">
+            <div class="modal-content border-0">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">NHẬP ĐƠN HÀNG MỚI</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     <form id="orderForm">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Mã Đơn Hàng</label>
-                                <input type="text" class="form-control" id="MaDonHang" placeholder="Ví dụ: DH001" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label small fw-bold">Số Điện Thoại</label>
-                                <input type="text" class="form-control" id="SDT" placeholder="09xxxxxxx" required>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small fw-bold">Tên Khách Hàng</label>
-                                <input type="text" class="form-control" id="TenKhachHang" required>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small fw-bold">Địa Chỉ Người Nhận</label>
-                                <input type="text" class="form-control" id="DiaChi" placeholder="Số nhà, tên đường..." required>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label small fw-bold">Ghi Chú</label>
-                                <textarea class="form-control" id="GhiChu" rows="3" placeholder="Chi tiết sản phẩm..."></textarea>
-                            </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Mã Đơn</label>
+                            <input type="text" class="form-control" id="MaDon" required>
                         </div>
-                        <div class="mt-4">
-                            <button type="submit" id="submitBtn" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">XÁC NHẬN TẠO ĐƠN</button>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Tên Khách Hàng</label>
+                            <input type="text" class="form-control" id="TenKH" required>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Sản Phẩm</label>
+                            <input type="text" class="form-control" id="SanPham" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Tổng Tiền (VNĐ)</label>
+                            <input type="number" class="form-control" id="TongTien" required>
+                        </div>
+                        <button type="submit" id="submitBtn" class="btn btn-primary w-100">LƯU ĐƠN HÀNG</button>
                     </form>
                 </div>
             </div>
@@ -178,111 +143,66 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Đường dẫn API của bạn
-        const API_URL = "https://script.google.com/macros/s/AKfycbx_eXIxDIiofRwP-Iq12uJtSgD88V-Lfdi_OiNk5qHmDasB9qqz5W5d9hieN3dX8oOJIA/exec";
+        // THAY LINK API CỦA BẠN VÀO ĐÂY (PHẢI KẾT THÚC BẰNG /exec)
+        const API_URL = "https://script.google.com/macros/s/AKfycbwZVnA8j9Zro6_vd-qYZQ38hdpUuLrABKgK4O2-LKMhivQEAUymFZ8EmrhOP1uMLK64Ig/exec";
 
-        const loadingOverlay = document.getElementById('loading-overlay');
+        const loading = document.getElementById('loading-overlay');
 
-        // Hàm 1: Lấy dữ liệu hiển thị (GET)
         async function loadData() {
-            loadingOverlay.style.display = 'flex';
+            loading.style.display = 'flex';
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
-                
                 let html = "";
                 data.forEach(row => {
-                    let formattedDate = "N/A";
-                    if (row.Timestamp) {
-                        const d = new Date(row.Timestamp);
-                        formattedDate = d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                    }
-
+                    const date = row.Timestamp ? new Date(row.Timestamp).toLocaleDateString('vi-VN') : '---';
                     html += `
                         <tr>
-                            <td class="ps-4 small text-muted">${formattedDate}</td>
-                            <td class="fw-bold text-dark">${row["Mã đơn hàng"] || '---'}</td>
-                            <td>${row["Tên khách hàng"] || '---'}</td>
-                            <td class="small text-secondary">${row["Địa chỉ người nhận"] || '---'}</td>
-                            <td><span class="badge bg-light text-primary border">${row["Số điện thoại"] || '---'}</span></td>
-                            <td class="small">${row["Ghi chú"] || ''}</td>
+                            <td class="ps-4 small text-muted">${date}</td>
+                            <td class="fw-bold">${row.MaDon || '---'}</td>
+                            <td>${row.TenKH || '---'}</td>
+                            <td class="small">${row.SanPham || '---'}</td>
+                            <td><span class="badge bg-info">${row.TrangThai || 'Mới'}</span></td>
+                            <td class="fw-bold text-success">${(row.TongTien || 0).toLocaleString()}đ</td>
                             <td class="pe-4 text-center">
-                                <button class="btn btn-sm btn-outline-danger border-0" onclick="deleteOrder('${row["Mã đơn hàng"]}')" title="Xóa">
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder('${row.MaDon}')">
                                     <i class="bi bi-trash"></i>
                                 </button>
                             </td>
                         </tr>`;
                 });
-
-                document.getElementById("data-table").innerHTML = html || '<tr><td colspan="7" class="text-center p-5 text-muted">Chưa có dữ liệu đơn hàng.</td></tr>';
+                document.getElementById("data-table").innerHTML = html || '<tr><td colspan="7" class="text-center p-5">Không có dữ liệu.</td></tr>';
                 document.getElementById("totalOrders").innerText = data.length;
-
-            } catch (error) {
-                console.error("API Error:", error);
-                document.getElementById("data-table").innerHTML = `<tr><td colspan="7" class="text-center p-5 text-danger">Lỗi kết nối API. Hãy kiểm tra link và quyền truy cập!</td></tr>`;
-            } finally {
-                loadingOverlay.style.display = 'none';
-            }
+            } catch (e) {
+                document.getElementById("data-table").innerHTML = `<tr><td colspan="7" class="text-center p-5 text-danger">Lỗi kết nối API. Hãy kiểm tra link /exec.</td></tr>`;
+            } finally { loading.style.display = 'none'; }
         }
 
-        // Hàm 2: Thêm đơn hàng (POST)
         document.getElementById('orderForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.innerText = "Đang xử lý...";
-            btn.disabled = true;
-            loadingOverlay.style.display = 'flex';
-
+            loading.style.display = 'flex';
             const payload = {
                 action: "add",
-                MaDonHang: document.getElementById('MaDonHang').value,
-                TenKhachHang: document.getElementById('TenKhachHang').value,
-                DiaChi: document.getElementById('DiaChi').value,
-                SDT: document.getElementById('SDT').value,
-                GhiChu: document.getElementById('GhiChu').value
+                MaDon: document.getElementById('MaDon').value,
+                TenKH: document.getElementById('TenKH').value,
+                SanPham: document.getElementById('SanPham').value,
+                TongTien: document.getElementById('TongTien').value
             };
-
             try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    cache: 'no-cache',
-                    body: JSON.stringify(payload)
-                });
-                
-                alert("Đã gửi yêu cầu tạo vận đơn!");
-                const modal = bootstrap.Modal.getInstance(document.getElementById('orderModal'));
-                modal.hide();
-                document.getElementById('orderForm').reset();
-                setTimeout(loadData, 1500);
-
-            } catch (error) {
-                alert("Lỗi khi gửi dữ liệu!");
-            } finally {
-                btn.innerText = "XÁC NHẬN TẠO ĐƠN";
-                btn.disabled = false;
-                loadingOverlay.style.display = 'none';
-            }
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                alert("Đã lưu!");
+                location.reload();
+            } catch (err) { alert("Lỗi!"); loading.style.display = 'none'; }
         });
 
-        // Hàm 3: Xóa đơn hàng (POST với action delete)
         async function deleteOrder(id) {
-            if (!id || id === '---') return;
-            if (!confirm(`Xác nhận xóa đơn hàng [${id}]?`)) return;
-
-            loadingOverlay.style.display = 'flex';
+            if (!confirm(`Xóa đơn ${id}?`)) return;
+            loading.style.display = 'flex';
             try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({ action: "delete", MaDon: id })
-                });
-                alert("Yêu cầu xóa đã gửi!");
-                setTimeout(loadData, 1500);
-            } catch (error) {
-                alert("Lỗi khi xóa!");
-                loadingOverlay.style.display = 'none';
-            }
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "delete", MaDon: id }) });
+                alert("Đã xóa!");
+                setTimeout(() => location.reload(), 1500);
+            } catch (e) { alert("Lỗi!"); loading.style.display = 'none'; }
         }
 
         window.onload = loadData;
