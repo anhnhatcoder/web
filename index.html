@@ -3,82 +3,325 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản Lý Đơn Hàng - Mỹ Phẩm</title>
+    <title>Hệ Thống Quản Lý Đơn Hàng - Nguyễn Thị Thanh Diệu</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
     <style>
-        body { background-color: #f8f9fa; }
-        .sidebar { height: 100vh; background: #343a40; color: white; position: fixed; width: 240px; }
-        .sidebar a { color: white; text-decoration: none; padding: 15px; display: block; }
-        .sidebar a:hover { background: #495057; }
-        .main-content { margin-left: 240px; padding: 20px; }
-        .card-header { background: #fff; font-weight: bold; }
+        :root {
+            --sidebar-width: 260px;
+            --primary-color: #0d6efd;
+            --dark-bg: #1e1e2d;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f7fe;
+            margin: 0;
+        }
+
+        /* Sidebar Style */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--dark-bg);
+            color: #a2a3b7;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding-top: 20px;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            padding: 0 25px 30px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #2d2d3f;
+            margin-bottom: 20px;
+        }
+
+        .sidebar a {
+            padding: 12px 25px;
+            color: #a2a3b7;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .sidebar a i { margin-right: 15px; font-size: 1.2rem; }
+        .sidebar a:hover, .sidebar a.active {
+            color: white;
+            background-color: #2b2b40;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 30px;
+        }
+
+        .top-nav {
+            background: white;
+            padding: 15px 30px;
+            margin: -30px -30px 30px -30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            margin-bottom: 25px;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            border-top: none;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Loading Spinner */
+        #loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2000;
+        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h4 class="text-center py-4">Hệ Thống Quản Lý</h4>
-        <a href="#">📦 Quản lý đơn hàng</a>
-        <a href="#">🏠 Quản lý kho</a>
-        <a href="#">👥 Khách hàng</a>
-        <a href="#">📊 Báo cáo doanh thu</a>
+        <div class="sidebar-header text-center">
+            <i class="bi bi-box-seam me-2"></i> BÁCH KHOA ERP
+        </div>
+        <a href="#" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="#"><i class="bi bi-cart-check"></i> Quản lý đơn hàng</a>
+        <a href="#"><i class="bi bi-house-door"></i> Quản lý kho</a>
+        <a href="#"><i class="bi bi-people"></i> Khách hàng</a>
+        <a href="#"><i class="bi bi-bar-chart-line"></i> Báo cáo doanh thu</a>
+        <div class="mt-5 px-4 small text-uppercase" style="font-size: 10px; color: #555;">Thông tin sinh viên</div>
+        <div class="px-4 py-2 small" style="color: #888;">
+            Nguyễn Thị Thanh Diệu<br>MSSV: 2110906
+        </div>
     </div>
 
     <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Danh sách đơn hàng</h2>
-            <button class="btn btn-primary" onclick="loadData()">🔄 Làm mới dữ liệu</button>
+        
+        <nav class="top-nav">
+            <h5 class="mb-0 fw-bold">Hệ Thống Quản Lý Đơn Hàng Mỹ Phẩm</h5>
+            <div class="d-flex align-items-center">
+                <span class="me-3 small text-muted">Chào, Thanh Diệu!</span>
+                <img src="https://ui-avatars.com/api/?name=Thanh+Dieu&background=0D8ABC&color=fff" class="rounded-circle" width="35">
+            </div>
+        </nav>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary bg-opacity-10 p-3 rounded-circle me-3">
+                            <i class="bi bi-bag-check text-primary fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0">Tổng Đơn Hàng</p>
+                            <h3 class="mb-0 fw-bold" id="totalOrders">0</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-success bg-opacity-10 p-3 rounded-circle me-3">
+                            <i class="bi bi-cash-stack text-success fs-4"></i>
+                        </div>
+                        <div>
+                            <p class="text-muted mb-0">Doanh Thu</p>
+                            <h3 class="mb-0 fw-bold" id="totalRevenue">0đ</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-end d-flex align-items-center justify-content-end">
+                <button class="btn btn-primary btn-lg shadow" data-bs-toggle="modal" data-bs-target="#orderModal">
+                    <i class="bi bi-plus-circle me-2"></i> Tạo vận đơn mới
+                </button>
+            </div>
         </div>
 
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Mã Đơn</th>
-                            <th>Tên Khách Hàng</th>
-                            <th>Sản Phẩm</th>
-                            <th>Trạng Thái</th>
-                            <th>Tổng Tiền</th>
-                        </tr>
-                    </thead>
-                    <tbody id="data-table">
-                        <tr><td colspan="5" class="text-center">Đang tải dữ liệu...</td></tr>
-                    </tbody>
-                </table>
+        <div class="card overflow-hidden">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold text-primary">Danh sách vận đơn gần đây</h6>
+                <button class="btn btn-sm btn-outline-secondary" onclick="loadData()">
+                    <i class="bi bi-arrow-clockwise"></i> Làm mới
+                </button>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Ngày tạo</th>
+                                <th>Mã Đơn</th>
+                                <th>Khách Hàng</th>
+                                <th>Sản Phẩm</th>
+                                <th>Tổng Tiền</th>
+                                <th>Trạng Thái</th>
+                                <th class="pe-4 text-center">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="data-table">
+                            </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        // Thay link Web App URL từ Apps Script của bạn vào đây
-        const API_URL = "URL_APPS_SCRIPT_CỦA_BẠN";
+    <div class="modal fade" id="orderModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold">TẠO VẬN ĐƠN MỚI</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="orderForm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Mã Đơn Hàng</label>
+                                <input type="text" class="form-control" id="MaDon" placeholder="VD: DH001" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Tổng Tiền (VNĐ)</label>
+                                <input type="number" class="form-control" id="TongTien" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Tên Khách Hàng</label>
+                                <input type="text" class="form-control" id="TenKH" required>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Sản Phẩm / Ghi Chú</label>
+                                <textarea class="form-control" id="SanPham" rows="2" placeholder="Ví dụ: 01 Son môi, 02 Kem dưỡng..." required></textarea>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <button type="submit" id="submitBtn" class="btn btn-primary w-100 py-2 fw-bold">XÁC NHẬN TẠO ĐƠN</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div id="loading">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cấu hình URL Apps Script của bạn
+        const API_URL = "DÁN_URL_WEB_APP_CỦA_BẠN_Ở_ĐÂY";
+
+        const loading = document.getElementById('loading');
+
+        // Hàm lấy dữ liệu từ Sheets
         async function loadData() {
+            loading.style.display = 'block';
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 
                 let html = "";
+                let revenue = 0;
+
                 data.forEach(row => {
+                    const price = parseFloat(row.TongTien) || 0;
+                    revenue += price;
+                    
                     html += `
                         <tr>
-                            <td>${row.MaDon}</td>
+                            <td class="ps-4 small text-muted">${new Date(row[0]).toLocaleDateString('vi-VN')}</td>
+                            <td class="fw-bold text-dark">${row.MaDon}</td>
                             <td>${row.TenKH}</td>
-                            <td>${row.SanPham}</td>
-                            <td><span class="badge bg-info">${row.TrangThai}</span></td>
-                            <td>${row.TongTien} VNĐ</td>
+                            <td class="small">${row.SanPham}</td>
+                            <td class="fw-bold">${price.toLocaleString('vi-VN')}đ</td>
+                            <td><span class="status-badge bg-info text-white">Mới tạo</span></td>
+                            <td class="pe-4 text-center">
+                                <button class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></button>
+                            </td>
                         </tr>
                     `;
                 });
+
                 document.getElementById("data-table").innerHTML = html;
+                document.getElementById("totalOrders").innerText = data.length;
+                document.getElementById("totalRevenue").innerText = revenue.toLocaleString('vi-VN') + "đ";
+
             } catch (error) {
                 console.error("Lỗi:", error);
-                document.getElementById("data-table").innerHTML = "<tr><td colspan='5'>Không thể lấy dữ liệu!</td></tr>";
+                document.getElementById("data-table").innerHTML = "<tr><td colspan='7' class='text-center p-4'>Không thể tải dữ liệu. Vui lòng kiểm tra lại URL API.</td></tr>";
+            } finally {
+                loading.style.display = 'none';
             }
         }
 
-        // Tự động tải dữ liệu khi mở web
+        // Hàm gửi dữ liệu lên Sheets
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.innerText = "Đang xử lý...";
+            btn.disabled = true;
+
+            const formData = {
+                MaDon: document.getElementById('MaDon').value,
+                TenKH: document.getElementById('TenKH').value,
+                SanPham: document.getElementById('SanPham').value,
+                TongTien: document.getElementById('TongTien').value
+            };
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(formData)
+                });
+                
+                alert("Tạo vận đơn thành công!");
+                location.reload(); 
+            } catch (error) {
+                alert("Có lỗi xảy ra khi gửi dữ liệu!");
+                btn.innerText = "XÁC NHẬN TẠO ĐƠN";
+                btn.disabled = false;
+            }
+        });
+
+        // Tự động tải dữ liệu khi trang web sẵn sàng
         window.onload = loadData;
     </script>
 </body>
