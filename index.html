@@ -3,41 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Quản Lý Đơn Hàng ERP</title>
+    <title>ICD SOTRANS - Hệ Thống Quản Lý Container</title>
     
+    <!-- Bootstrap 5 & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { --sidebar-width: 260px; --primary-color: #0d6efd; --dark-bg: #1e1e2d; }
+        :root { --sidebar-width: 260px; --primary-color: #0056b3; --dark-bg: #1a233a; }
         body { font-family: 'Inter', sans-serif; background-color: #f4f7fe; margin: 0; overflow-x: hidden; }
 
+        /* Sidebar Styling */
         .sidebar {
             width: var(--sidebar-width); height: 100vh; background-color: var(--dark-bg);
             color: #a2a3b7; position: fixed; left: 0; top: 0; padding-top: 20px; z-index: 1000;
         }
         .sidebar-header { padding: 0 25px 30px; color: white; font-weight: 700; border-bottom: 1px solid #2d2d3f; }
-        .sidebar a { padding: 12px 25px; color: #a2a3b7; text-decoration: none; display: flex; align-items: center; transition: 0.2s; border-left: 3px solid transparent; }
-        .sidebar a:hover, .sidebar a.active { color: white; background-color: #2b2b40; border-left-color: var(--primary-color); }
+        .sidebar a { 
+            padding: 14px 25px; color: #a2a3b7; text-decoration: none; display: flex; 
+            align-items: center; transition: 0.2s; border-left: 3px solid transparent; cursor: pointer;
+        }
+        .sidebar a:hover, .sidebar a.active { color: white; background-color: #27314f; border-left-color: #438eff; }
         .sidebar a i { margin-right: 15px; font-size: 1.2rem; }
 
-        .main-content { margin-left: var(--sidebar-width); padding: 30px; transition: all 0.3s; }
+        /* Main Content */
+        .main-content { margin-left: var(--sidebar-width); padding: 30px; }
         .top-nav {
             background: white; padding: 15px 30px; margin: -30px -30px 30px -30px;
             display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .card { border: none; border-radius: 12px; box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075); margin-bottom: 25px; }
+        .table thead th { background-color: #f8f9fa; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; color: #6c757d; }
+        
+        /* Loading Overlay */
         #loading-overlay { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: rgba(255,255,255,0.7); z-index: 9999; justify-content: center; align-items: center; 
         }
-        
-        @media (max-width: 768px) {
-            .sidebar { width: 0; overflow: hidden; }
-            .main-content { margin-left: 0; }
-        }
+
+        /* Ẩn hiện các trang */
+        .page-view { display: none; }
+        .page-view.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Badge riêng cho các hãng tàu (Line) */
+        .line-badge { font-weight: 600; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; }
+        .line-COS { background-color: #e3f2fd; color: #0d47a1; }
+        .line-ZIM { background-color: #fff3e0; color: #e65100; }
+        .line-IAL { background-color: #e8f5e9; color: #1b5e20; }
+        .line-default { background-color: #f1f3f5; color: #495057; }
     </style>
 </head>
 <body>
@@ -45,167 +61,266 @@
     <div id="loading-overlay">
         <div class="text-center">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 fw-bold">Đang xử lý...</p>
+            <p class="mt-2 fw-bold text-dark">Đang tải dữ liệu Container...</p>
         </div>
     </div>
 
-    <!-- Sidebar -->
+    <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="sidebar-header text-center">HỆ THỐNG ERP</div>
-        <a href="#" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
-        <a href="#"><i class="bi bi-cart-check"></i> Đơn hàng</a>
-        <a href="#"><i class="bi bi-house-door"></i> Kho hàng</a>
-        <a href="#"><i class="bi bi-people"></i> Khách hàng</a>
+        <div class="sidebar-header text-center fs-5">
+            <i class="bi bi-box-seam me-2 text-primary"></i> ICD SOTRANS
+        </div>
+        
+        <div class="px-4 mb-2 mt-3 small text-uppercase fw-bold" style="color: #6c7293; font-size: 11px;">Hệ thống</div>
+        <a class="nav-link active" data-target="page-dashboard"><i class="bi bi-grid-1x2-fill"></i> Tổng quan</a>
+        
+        <div class="px-4 mb-2 mt-4 small text-uppercase fw-bold" style="color: #6c7293; font-size: 11px;">Báo cáo nghiệp vụ</div>
+        <a class="nav-link" data-target="page-nhap"><i class="bi bi-box-arrow-in-right"></i> Nhập Container Rỗng</a>
+        <a class="nav-link" data-target="page-cap"><i class="bi bi-box-arrow-up-right"></i> Cấp Container Rỗng</a>
+        
+        <div class="mt-5 px-4 small text-uppercase fw-bold" style="font-size: 11px; color: #6c7293;">Người trực</div>
+        <div class="px-4 py-2 small" style="color: #eee;">
+            <div class="fw-bold">Điều độ bãi (Admin)</div>
+            <div class="text-muted" style="font-size: 12px;">Ca làm việc: Sáng</div>
+        </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- NỘI DUNG CHÍNH -->
     <div class="main-content">
-        <nav class="top-nav">
-            <h5 class="mb-0 fw-bold">Quản Lý Đơn Hàng</h5>
+        <nav class="top-nav rounded-3 mb-4">
+            <h5 class="mb-0 fw-bold text-dark" id="top-title">Dashboard Tổng Quan</h5>
             <div class="d-flex align-items-center">
-                <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" class="rounded-circle shadow-sm" width="35">
+                <span class="me-3 small text-muted fw-medium" id="current-date">Ngày 02/06/2025</span>
+                <img src="https://ui-avatars.com/api/?name=Admin&background=0056b3&color=fff" class="rounded-circle shadow-sm" width="35">
             </div>
         </nav>
 
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card p-3">
-                    <p class="text-muted mb-0 small">Tổng đơn hàng</p>
-                    <h3 class="mb-0 fw-bold" id="totalOrders">0</h3>
+        <!-- ================= TRANG 1: DASHBOARD ================= -->
+        <div id="page-dashboard" class="page-view active">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card p-4 border-0 shadow-sm h-100" style="cursor:pointer;" onclick="switchPage('page-nhap')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 12px;">TỔNG SỐ CONT NHẬP BÃI</p>
+                                <h2 class="mb-0 fw-bold text-primary" id="dash-nhap-count">--</h2>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                                <i class="bi bi-box-arrow-in-down text-primary fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4 border-0 shadow-sm h-100" style="cursor:pointer;" onclick="switchPage('page-cap')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <p class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 12px;">TỔNG SỐ CONT ĐÃ CẤP</p>
+                                <h2 class="mb-0 fw-bold text-success" id="dash-cap-count">--</h2>
+                            </div>
+                            <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                                <i class="bi bi-box-arrow-up text-success fs-3"></i>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="col-md-8 text-end">
-                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#orderModal">
-                    <i class="bi bi-plus-lg me-2"></i> Tạo Đơn Mới
-                </button>
+            
+            <div class="card mt-4 border-0 shadow-sm">
+                <div class="card-body p-4 text-center text-muted">
+                    <i class="bi bi-info-circle fs-1 mb-3 d-block text-secondary"></i>
+                    <p>Hãy chọn Menu bên trái hoặc bấm vào các thẻ bên trên để xem chi tiết danh sách Container.</p>
+                </div>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header bg-white py-3 border-bottom">
-                <h6 class="m-0 fw-bold text-dark">Danh sách vận đơn gần đây</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th class="ps-4">Ngày tạo</th>
-                                <th>Mã đơn</th>
-                                <th>Khách hàng</th>
-                                <th>Sản phẩm</th>
-                                <th>Trạng thái</th>
-                                <th>Tổng tiền</th>
-                                <th class="pe-4 text-center">Xóa</th>
-                            </tr>
-                        </thead>
-                        <tbody id="data-table">
-                            <tr><td colspan="7" class="text-center p-5">Đang tải dữ liệu...</td></tr>
-                        </tbody>
-                    </table>
+        <!-- ================= TRANG 2: CONTAINER NHẬP BÃI ================= -->
+        <div id="page-nhap" class="page-view">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                    <h6 class="m-0 fw-bold text-primary"><i class="bi bi-table me-2"></i>Dữ Liệu Container Nhập</h6>
+                    <button class="btn btn-sm btn-outline-primary" onclick="loadData('ContNhap')">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Cập nhật
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Số Container</th>
+                                    <th>Size</th>
+                                    <th>Line</th>
+                                    <th>Ngày Nhập Bãi</th>
+                                    <th>Ghi chú (Tình trạng)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-nhap">
+                                <tr><td colspan="5" class="text-center p-4">Đang chờ tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- ================= TRANG 3: CONTAINER CẤP RỖNG ================= -->
+        <div id="page-cap" class="page-view">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                    <h6 class="m-0 fw-bold text-success"><i class="bi bi-table me-2"></i>Dữ Liệu Container Đã Cấp</h6>
+                    <button class="btn btn-sm btn-outline-success" onclick="loadData('ContCap')">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Cập nhật
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0 text-nowrap">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Số Container</th>
+                                    <th>Size</th>
+                                    <th>Line</th>
+                                    <th>Ngày Nhập Bãi</th>
+                                    <th>Ngày Thực Hiện (Cấp)</th>
+                                    <th>Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-cap">
+                                <tr><td colspan="6" class="text-center p-4">Đang chờ tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="orderModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content border-0">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">NHẬP ĐƠN HÀNG MỚI</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <form id="orderForm">
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Mã Đơn</label>
-                            <input type="text" class="form-control" id="MaDon" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Tên Khách Hàng</label>
-                            <input type="text" class="form-control" id="TenKH" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Sản Phẩm</label>
-                            <input type="text" class="form-control" id="SanPham" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold">Tổng Tiền (VNĐ)</label>
-                            <input type="number" class="form-control" id="TongTien" required>
-                        </div>
-                        <button type="submit" id="submitBtn" class="btn btn-primary w-100">LƯU ĐƠN HÀNG</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // THAY LINK API CỦA BẠN VÀO ĐÂY (PHẢI KẾT THÚC BẰNG /exec)
-        const API_URL = "https://script.google.com/macros/s/AKfycbwZVnA8j9Zro6_vd-qYZQ38hdpUuLrABKgK4O2-LKMhivQEAUymFZ8EmrhOP1uMLK64Ig/exec";
+        // QUAN TRỌNG: Dán link Web App của bạn (kết thúc bằng /exec) vào biến này
+        const API_URL = "https://script.google.com/macros/s/AKfycby8Mfqa5R8F2nq8YTo61MyE-d2bk4RyLXNsmhkIu4tfNe0FCmoDN0rn71fUEYzx42XrhA/exec";
+
+        // Cập nhật ngày tháng trên header
+        document.getElementById('current-date').innerText = "Hôm nay: " + new Date().toLocaleDateString('vi-VN');
+
+        // ================= ĐIỀU HƯỚNG TRANG =================
+        const navLinks = document.querySelectorAll('.nav-link[data-target]');
+        const pages = document.querySelectorAll('.page-view');
+        const topTitle = document.getElementById('top-title');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                switchPage(targetId);
+            });
+        });
+
+        function switchPage(pageId) {
+            navLinks.forEach(l => l.classList.remove('active'));
+            document.querySelector(`.nav-link[data-target="${pageId}"]`).classList.add('active');
+
+            pages.forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+
+            if(pageId === 'page-dashboard') {
+                topTitle.innerText = "Dashboard Tổng Quan";
+                loadDashboardStats();
+            } else if(pageId === 'page-nhap') {
+                topTitle.innerText = "Báo Cáo Nhập Container Rỗng";
+                loadData('ContNhap');
+            } else if(pageId === 'page-cap') {
+                topTitle.innerText = "Báo Cáo Cấp Container Rỗng";
+                loadData('ContCap');
+            }
+        }
+
+        // ================= HÀM XỬ LÝ MÀU CHO HÃNG TÀU (LINE) =================
+        function getLineBadge(lineCode) {
+            if (!lineCode) return `<span class="line-badge line-default">---</span>`;
+            const code = lineCode.toString().trim().toUpperCase();
+            if (code.includes("COS")) return `<span class="line-badge line-COS">${code}</span>`;
+            if (code.includes("ZIM")) return `<span class="line-badge line-ZIM">${code}</span>`;
+            if (code.includes("IAL")) return `<span class="line-badge line-IAL">${code}</span>`;
+            return `<span class="line-badge line-default">${code}</span>`;
+        }
 
         const loading = document.getElementById('loading-overlay');
 
-        async function loadData() {
+        // ================= HÀM LẤY DỮ LIỆU BẢNG =================
+        async function loadData(sheetType) {
+            if (API_URL.includes("DÁN_LINK")) {
+                alert("Bạn chưa cấu hình link API_URL trong file HTML!");
+                return;
+            }
+
             loading.style.display = 'flex';
             try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
+                const res = await fetch(`${API_URL}?type=${sheetType}`);
+                const data = await res.json();
+
+                if (data.error) throw new Error(data.error);
+
                 let html = "";
                 data.forEach(row => {
-                    const date = row.Timestamp ? new Date(row.Timestamp).toLocaleDateString('vi-VN') : '---';
-                    html += `
-                        <tr>
-                            <td class="ps-4 small text-muted">${date}</td>
-                            <td class="fw-bold">${row.MaDon || '---'}</td>
-                            <td>${row.TenKH || '---'}</td>
-                            <td class="small">${row.SanPham || '---'}</td>
-                            <td><span class="badge bg-info">${row.TrangThai || 'Mới'}</span></td>
-                            <td class="fw-bold text-success">${(row.TongTien || 0).toLocaleString()}đ</td>
-                            <td class="pe-4 text-center">
-                                <button class="btn btn-sm btn-outline-danger" onclick="deleteOrder('${row.MaDon}')">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
-                        </tr>`;
+                    // Dùng biến đúng với tên cột ở Bước 1
+                    const soCont = row.SoContainer || '---';
+                    const size = row.Size || '---';
+                    const lineBadge = getLineBadge(row.Line);
+                    const ngayNhap = row.NgayNhap || '---';
+                    const ghiChu = row.GhiChu || '';
+                    
+                    // Rút gọn ghi chú
+                    const shortGhiChu = ghiChu.length > 55 ? ghiChu.substring(0, 55) + "..." : ghiChu;
+
+                    if (sheetType === 'ContNhap') {
+                        html += `
+                            <tr>
+                                <td class="ps-4 fw-bold text-dark">${soCont}</td>
+                                <td>${size}</td>
+                                <td>${lineBadge}</td>
+                                <td class="text-secondary">${ngayNhap}</td>
+                                <td class="small" title="${ghiChu}">${shortGhiChu}</td>
+                            </tr>`;
+                    } else if (sheetType === 'ContCap') {
+                        const ngayCap = row.NgayCap || '---';
+                        html += `
+                            <tr>
+                                <td class="ps-4 fw-bold text-dark">${soCont}</td>
+                                <td>${size}</td>
+                                <td>${lineBadge}</td>
+                                <td class="text-secondary small">${ngayNhap}</td>
+                                <td class="text-success fw-bold">${ngayCap}</td>
+                                <td class="small" title="${ghiChu}">${shortGhiChu}</td>
+                            </tr>`;
+                    }
                 });
-                document.getElementById("data-table").innerHTML = html || '<tr><td colspan="7" class="text-center p-5">Không có dữ liệu.</td></tr>';
-                document.getElementById("totalOrders").innerText = data.length;
-            } catch (e) {
-                document.getElementById("data-table").innerHTML = `<tr><td colspan="7" class="text-center p-5 text-danger">Lỗi kết nối API. Hãy kiểm tra link /exec.</td></tr>`;
-            } finally { loading.style.display = 'none'; }
+
+                const targetTbody = sheetType === 'ContNhap' ? 'tbody-nhap' : 'tbody-cap';
+                document.getElementById(targetTbody).innerHTML = html || `<tr><td colspan="6" class="text-center">Không có dữ liệu</td></tr>`;
+                
+                // Cập nhật số liệu cho Dashboard nếu đang load
+                if (sheetType === 'ContNhap') document.getElementById('dash-nhap-count').innerText = data.length;
+                if (sheetType === 'ContCap') document.getElementById('dash-cap-count').innerText = data.length;
+
+            } catch (err) {
+                console.error(err);
+                const targetTbody = sheetType === 'ContNhap' ? 'tbody-nhap' : 'tbody-cap';
+                document.getElementById(targetTbody).innerHTML = `<tr><td colspan="6" class="text-center text-danger">Lỗi kết nối hoặc không tìm thấy Sheet '${sheetType}'</td></tr>`;
+            } finally {
+                loading.style.display = 'none';
+            }
         }
 
-        document.getElementById('orderForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            loading.style.display = 'flex';
-            const payload = {
-                action: "add",
-                MaDon: document.getElementById('MaDon').value,
-                TenKH: document.getElementById('TenKH').value,
-                SanPham: document.getElementById('SanPham').value,
-                TongTien: document.getElementById('TongTien').value
-            };
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                alert("Đã lưu!");
-                location.reload();
-            } catch (err) { alert("Lỗi!"); loading.style.display = 'none'; }
-        });
-
-        async function deleteOrder(id) {
-            if (!confirm(`Xóa đơn ${id}?`)) return;
-            loading.style.display = 'flex';
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: "delete", MaDon: id }) });
-                alert("Đã xóa!");
-                setTimeout(() => location.reload(), 1500);
-            } catch (e) { alert("Lỗi!"); loading.style.display = 'none'; }
+        // ================= HÀM LẤY SỐ LƯỢNG CHO DASHBOARD =================
+        async function loadDashboardStats() {
+            // Tải ngầm dữ liệu để lấy tổng số đếm
+            loadData('ContNhap');
+            loadData('ContCap');
         }
 
-        window.onload = loadData;
+        // Tự động tải Dashboard khi mới mở web
+        window.onload = loadDashboardStats;
     </script>
 </body>
 </html>
