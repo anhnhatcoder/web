@@ -14,6 +14,26 @@
         :root { --sidebar-width: 260px; --primary-color: #0056b3; --dark-bg: #1a233a; }
         body { font-family: 'Inter', sans-serif; background-color: #f4f7fe; margin: 0; overflow-x: hidden; }
 
+        /* ================= BỐ CỤC ĐĂNG NHẬP ================= */
+        #login-layout {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0056b3 0%, #002d62 100%);
+        }
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            border-radius: 16px;
+            background: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        /* ================= BỐ CỤC ỨNG DỤNG ================= */
+        #app-layout { display: none; } /* Ẩn đi cho đến khi đăng nhập */
+
         /* Sidebar Styling */
         .sidebar {
             width: var(--sidebar-width); height: 100vh; background-color: var(--dark-bg);
@@ -61,148 +81,342 @@
     <div id="loading-overlay">
         <div class="text-center">
             <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 fw-bold text-dark">Đang tải dữ liệu Container...</p>
+            <p class="mt-2 fw-bold text-dark">Đang tải dữ liệu...</p>
         </div>
     </div>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <div class="sidebar-header text-center fs-5">
-            <i class="bi bi-box-seam me-2 text-primary"></i> ICD SOTRANS
-        </div>
-        
-        <div class="px-4 mb-2 mt-3 small text-uppercase fw-bold" style="color: #6c7293; font-size: 11px;">Hệ thống</div>
-        <a class="nav-link active" data-target="page-dashboard"><i class="bi bi-grid-1x2-fill"></i> Tổng quan</a>
-        
-        <div class="px-4 mb-2 mt-4 small text-uppercase fw-bold" style="color: #6c7293; font-size: 11px;">Báo cáo nghiệp vụ</div>
-        <a class="nav-link" data-target="page-nhap"><i class="bi bi-box-arrow-in-right"></i> Nhập Container Rỗng</a>
-        <a class="nav-link" data-target="page-cap"><i class="bi bi-box-arrow-up-right"></i> Cấp Container Rỗng</a>
-        
-        <div class="mt-5 px-4 small text-uppercase fw-bold" style="font-size: 11px; color: #6c7293;">Người trực</div>
-        <div class="px-4 py-2 small" style="color: #eee;">
-            <div class="fw-bold">Điều độ bãi (Admin)</div>
-            <div class="text-muted" style="font-size: 12px;">Ca làm việc: Sáng</div>
-        </div>
-    </div>
-
-    <!-- NỘI DUNG CHÍNH -->
-    <div class="main-content">
-        <nav class="top-nav rounded-3 mb-4">
-            <h5 class="mb-0 fw-bold text-dark" id="top-title">Dashboard Tổng Quan</h5>
-            <div class="d-flex align-items-center">
-                <span class="me-3 small text-muted fw-medium" id="current-date">Ngày 02/06/2025</span>
-                <img src="https://ui-avatars.com/api/?name=Admin&background=0056b3&color=fff" class="rounded-circle shadow-sm" width="35">
+    <!-- ================= MÀN HÌNH ĐĂNG NHẬP ================= -->
+    <div id="login-layout">
+        <div class="login-card">
+            <div class="text-center mb-4">
+                <i class="bi bi-box-seam text-primary" style="font-size: 3rem;"></i>
+                <h4 class="fw-bold mt-2 text-dark">ICD SOTRANS</h4>
+                <p class="text-muted small">Hệ thống quản lý Container</p>
             </div>
-        </nav>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Tên đăng nhập</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="username" placeholder="Nhập tên tài khoản..." required>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Mật khẩu</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                        <input type="password" class="form-control" id="password" placeholder="Nhập mật khẩu..." required>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold small">Vai trò đăng nhập</label>
+                    <select class="form-select" id="role">
+                        <option value="admin">Quản trị viên (Admin)</option>
+                        <option value="dieudo">Nhân viên Điều độ bãi</option>
+                        <option value="giaonhan">Nhân viên Giao nhận</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">ĐĂNG NHẬP</button>
+            </form>
+        </div>
+    </div>
 
-        <!-- ================= TRANG 1: DASHBOARD ================= -->
-        <div id="page-dashboard" class="page-view active">
-            <div class="row g-4">
-                <div class="col-md-6">
-                    <div class="card p-4 border-0 shadow-sm h-100" style="cursor:pointer;" onclick="switchPage('page-nhap')">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 12px;">TỔNG SỐ CONT NHẬP BÃI</p>
-                                <h2 class="mb-0 fw-bold text-primary" id="dash-nhap-count">--</h2>
-                            </div>
-                            <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
-                                <i class="bi bi-box-arrow-in-down text-primary fs-3"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="card p-4 border-0 shadow-sm h-100" style="cursor:pointer;" onclick="switchPage('page-cap')">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <p class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 12px;">TỔNG SỐ CONT ĐÃ CẤP</p>
-                                <h2 class="mb-0 fw-bold text-success" id="dash-cap-count">--</h2>
-                            </div>
-                            <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-                                <i class="bi bi-box-arrow-up text-success fs-3"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <!-- ================= MÀN HÌNH ỨNG DỤNG CHÍNH ================= -->
+    <div id="app-layout">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header text-center fs-5">
+                <i class="bi bi-box-seam me-2 text-primary"></i> ICD SOTRANS
             </div>
             
-            <div class="card mt-4 border-0 shadow-sm">
-                <div class="card-body p-4 text-center text-muted">
-                    <i class="bi bi-info-circle fs-1 mb-3 d-block text-secondary"></i>
-                    <p>Hãy chọn Menu bên trái hoặc bấm vào các thẻ bên trên để xem chi tiết danh sách Container.</p>
-                </div>
+            <div class="px-4 mb-2 mt-3 small text-uppercase fw-bold" style="color: #6c7293; font-size: 11px;">Hệ thống</div>
+            <a class="nav-link active" data-target="page-dashboard"><i class="bi bi-grid-1x2-fill"></i> Tổng quan</a>
+            
+            <div class="px-4 mb-2 mt-4 small text-uppercase fw-bold" style="color: #6c7293; font-size: 11px;">Quản lý nghiệp vụ</div>
+            <a class="nav-link" data-target="page-nhap"><i class="bi bi-box-arrow-in-right"></i> Nhập Container Rỗng</a>
+            <a class="nav-link" data-target="page-cap"><i class="bi bi-box-arrow-up-right"></i> Cấp Container Rỗng</a>
+            <a class="nav-link" data-target="page-bai"><i class="bi bi-layers"></i> Quản Lý Sơ Đồ Bãi</a>
+            <a class="nav-link" data-target="page-hangtau"><i class="bi bi-water"></i> Quản Lý Hãng Tàu</a>
+            
+            <!-- Chức năng chỉ Admin mới thấy -->
+            <div class="admin-only">
+                <div class="px-4 mb-2 mt-4 small text-uppercase fw-bold" style="color: #6c7293; font-size: 11px;">Quản trị viên</div>
+                <a class="nav-link" data-target="page-users"><i class="bi bi-people"></i> Quản Lý Tài Khoản</a>
+            </div>
+            
+            <div class="mt-5 px-4 small text-uppercase fw-bold" style="font-size: 11px; color: #6c7293;">Người trực</div>
+            <div class="px-4 py-2 small" style="color: #eee;">
+                <div class="fw-bold" id="logged-user-name">Đang tải...</div>
+                <div class="text-muted" style="font-size: 12px;" id="logged-user-role">...</div>
             </div>
         </div>
 
-        <!-- ================= TRANG 2: CONTAINER NHẬP BÃI ================= -->
-        <div id="page-nhap" class="page-view">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                    <h6 class="m-0 fw-bold text-primary"><i class="bi bi-table me-2"></i>Dữ Liệu Container Nhập</h6>
-                    <button class="btn btn-sm btn-outline-primary" onclick="loadData('ContNhap')">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Cập nhật
-                    </button>
+        <!-- NỘI DUNG CHÍNH -->
+        <div class="main-content">
+            <nav class="top-nav rounded-3 mb-4">
+                <h5 class="mb-0 fw-bold text-dark" id="top-title">Dashboard Tổng Quan</h5>
+                <div class="d-flex align-items-center">
+                    <span class="me-3 small text-muted fw-medium" id="current-date">Ngày 02/06/2025</span>
+                    <div class="dropdown">
+                        <img src="https://ui-avatars.com/api/?name=User&background=0056b3&color=fff" class="rounded-circle shadow-sm dropdown-toggle" width="35" data-bs-toggle="dropdown" style="cursor: pointer;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person-circle me-2"></i>Thông tin cá nhân</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="handleLogout()"><i class="bi bi-box-arrow-right me-2"></i>Đăng xuất</a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 text-nowrap">
+            </nav>
+
+            <!-- ================= TRANG 1: DASHBOARD ================= -->
+            <div id="page-dashboard" class="page-view active">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card p-4 border-0 shadow-sm h-100" style="cursor:pointer;" onclick="switchPage('page-nhap')">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 12px;">TỔNG SỐ CONT NHẬP BÃI</p>
+                                    <h2 class="mb-0 fw-bold text-primary" id="dash-nhap-count">--</h2>
+                                </div>
+                                <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+                                    <i class="bi bi-box-arrow-in-down text-primary fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card p-4 border-0 shadow-sm h-100" style="cursor:pointer;" onclick="switchPage('page-cap')">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <p class="text-muted mb-1 fw-bold text-uppercase" style="font-size: 12px;">TỔNG SỐ CONT ĐÃ CẤP</p>
+                                    <h2 class="mb-0 fw-bold text-success" id="dash-cap-count">--</h2>
+                                </div>
+                                <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+                                    <i class="bi bi-box-arrow-up text-success fs-3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TRANG 2: CONTAINER NHẬP BÃI ================= -->
+            <div id="page-nhap" class="page-view">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                        <h6 class="m-0 fw-bold text-primary"><i class="bi bi-table me-2"></i>Dữ Liệu Container Nhập</h6>
+                        <div>
+                            <button class="btn btn-sm btn-primary me-2"><i class="bi bi-plus-lg me-1"></i> Tạo lệnh nhập</button>
+                            <button class="btn btn-sm btn-outline-primary" onclick="loadData('ContNhap')">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Cập nhật
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Số Container</th>
+                                        <th>Size</th>
+                                        <th>Line</th>
+                                        <th>Ngày Nhập Bãi</th>
+                                        <th>Ghi chú (Tình trạng)</th>
+                                        <th class="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-nhap">
+                                    <tr><td colspan="6" class="text-center p-4">Đang chờ tải dữ liệu...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TRANG 3: CONTAINER CẤP RỖNG ================= -->
+            <div id="page-cap" class="page-view">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                        <h6 class="m-0 fw-bold text-success"><i class="bi bi-table me-2"></i>Dữ Liệu Container Đã Cấp</h6>
+                        <div>
+                            <button class="btn btn-sm btn-success me-2"><i class="bi bi-plus-lg me-1"></i> Tạo lệnh cấp</button>
+                            <button class="btn btn-sm btn-outline-success" onclick="loadData('ContCap')">
+                                <i class="bi bi-arrow-clockwise me-1"></i> Cập nhật
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th class="ps-4">Số Container</th>
+                                        <th>Size</th>
+                                        <th>Line</th>
+                                        <th>Ngày Nhập Bãi</th>
+                                        <th>Ngày Thực Hiện (Cấp)</th>
+                                        <th>Ghi chú</th>
+                                        <th class="text-center">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-cap">
+                                    <tr><td colspan="7" class="text-center p-4">Đang chờ tải dữ liệu...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TRANG 4: SƠ ĐỒ BÃI (Placeholder) ================= -->
+            <div id="page-bai" class="page-view">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 border-bottom">
+                        <h6 class="m-0 fw-bold text-dark"><i class="bi bi-layers me-2"></i>Sơ đồ quy hoạch bãi BRO</h6>
+                    </div>
+                    <div class="card-body text-center p-5 text-muted">
+                        <i class="bi bi-map fs-1 d-block mb-3"></i>
+                        <h5>Bản đồ trực quan Block / Row / Tier</h5>
+                        <p class="small">Chức năng đang được phát triển. Cho phép kéo thả và định vị Container thực tế trên bãi.</p>
+                        <button class="btn btn-outline-secondary mt-3">Mô phỏng 3D</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= TRANG 5: QUẢN LÝ HÃNG TÀU (Placeholder) ================= -->
+            <div id="page-hangtau" class="page-view">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                        <h6 class="m-0 fw-bold text-dark"><i class="bi bi-water me-2"></i>Danh mục Hãng Tàu (Lines)</h6>
+                        <button class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i> Thêm Hãng Tàu</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th class="ps-4">Số Container</th>
-                                    <th>Size</th>
-                                    <th>Line</th>
-                                    <th>Ngày Nhập Bãi</th>
-                                    <th>Ghi chú (Tình trạng)</th>
+                                    <th class="ps-4">Mã Line</th>
+                                    <th>Tên Hãng Tàu</th>
+                                    <th>Trạng Thái</th>
+                                    <th class="text-center">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-nhap">
-                                <tr><td colspan="5" class="text-center p-4">Đang chờ tải dữ liệu...</td></tr>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-4 fw-bold">COS</td>
+                                    <td>COSCO SHIPPING LINES</td>
+                                    <td><span class="badge bg-success">Đang hoạt động</span></td>
+                                    <td class="text-center"><button class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 fw-bold">ZIM</td>
+                                    <td>ZIM INTEGRATED SHIPPING</td>
+                                    <td><span class="badge bg-success">Đang hoạt động</span></td>
+                                    <td class="text-center"><button class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 fw-bold">IAL</td>
+                                    <td>INTERASIA LINES</td>
+                                    <td><span class="badge bg-success">Đang hoạt động</span></td>
+                                    <td class="text-center"><button class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></button></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- ================= TRANG 3: CONTAINER CẤP RỖNG ================= -->
-        <div id="page-cap" class="page-view">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
-                    <h6 class="m-0 fw-bold text-success"><i class="bi bi-table me-2"></i>Dữ Liệu Container Đã Cấp</h6>
-                    <button class="btn btn-sm btn-outline-success" onclick="loadData('ContCap')">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Cập nhật
-                    </button>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0 text-nowrap">
+            <!-- ================= TRANG 6: QUẢN LÝ TÀI KHOẢN (Admin Placeholder) ================= -->
+            <div id="page-users" class="page-view">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                        <h6 class="m-0 fw-bold text-dark"><i class="bi bi-people me-2"></i>Quản lý Tài khoản & Phân quyền</h6>
+                        <button class="btn btn-sm btn-primary"><i class="bi bi-person-plus me-1"></i> Tạo tài khoản</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-hover align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th class="ps-4">Số Container</th>
-                                    <th>Size</th>
-                                    <th>Line</th>
-                                    <th>Ngày Nhập Bãi</th>
-                                    <th>Ngày Thực Hiện (Cấp)</th>
-                                    <th>Ghi chú</th>
+                                    <th class="ps-4">Tài khoản</th>
+                                    <th>Họ và Tên</th>
+                                    <th>Vai trò</th>
+                                    <th>Trạng Thái</th>
+                                    <th class="text-center">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-cap">
-                                <tr><td colspan="6" class="text-center p-4">Đang chờ tải dữ liệu...</td></tr>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-4 fw-bold">admin</td>
+                                    <td>Quản Trị Viên Hệ Thống</td>
+                                    <td><span class="badge bg-danger">Admin</span></td>
+                                    <td><span class="badge bg-success">Hoạt động</span></td>
+                                    <td class="text-center"><button class="btn btn-sm btn-outline-secondary"><i class="bi bi-gear"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 fw-bold">dieudo01</td>
+                                    <td>Nguyễn Văn A</td>
+                                    <td><span class="badge bg-primary">Điều độ bãi</span></td>
+                                    <td><span class="badge bg-success">Hoạt động</span></td>
+                                    <td class="text-center"><button class="btn btn-sm btn-outline-secondary"><i class="bi bi-gear"></i></button></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 fw-bold">giaonhan02</td>
+                                    <td>Trần Thị B</td>
+                                    <td><span class="badge bg-info">Giao nhận</span></td>
+                                    <td><span class="badge bg-warning text-dark">Khóa</span></td>
+                                    <td class="text-center"><button class="btn btn-sm btn-outline-secondary"><i class="bi bi-gear"></i></button></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-        </div>
 
+        </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // QUAN TRỌNG: Dán link Web App của bạn (kết thúc bằng /exec) vào biến này
         const API_URL = "https://script.google.com/macros/s/AKfycby8Mfqa5R8F2nq8YTo61MyE-d2bk4RyLXNsmhkIu4tfNe0FCmoDN0rn71fUEYzx42XrhA/exec";
 
         // Cập nhật ngày tháng trên header
         document.getElementById('current-date').innerText = "Hôm nay: " + new Date().toLocaleDateString('vi-VN');
+
+        // ================= XỬ LÝ ĐĂNG NHẬP / ĐĂNG XUẤT =================
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const role = document.getElementById('role').value;
+            const roleText = document.getElementById('role').options[document.getElementById('role').selectedIndex].text;
+
+            // Cập nhật tên người dùng trên sidebar
+            document.getElementById('logged-user-name').innerText = username;
+            document.getElementById('logged-user-role').innerText = roleText;
+
+            // Xử lý phân quyền (Ẩn/Hiện menu Admin)
+            const adminMenus = document.querySelectorAll('.admin-only');
+            if (role === 'admin') {
+                adminMenus.forEach(menu => menu.style.display = 'block');
+            } else {
+                adminMenus.forEach(menu => menu.style.display = 'none');
+            }
+
+            // Chuyển màn hình
+            document.getElementById('login-layout').style.display = 'none';
+            document.getElementById('app-layout').style.display = 'block';
+
+            // Tải dữ liệu ban đầu
+            switchPage('page-dashboard');
+        }
+
+        function handleLogout() {
+            if(confirm("Bạn có chắc chắn muốn đăng xuất?")) {
+                document.getElementById('login-layout').style.display = 'flex';
+                document.getElementById('app-layout').style.display = 'none';
+                document.getElementById('loginForm').reset();
+            }
+        }
 
         // ================= ĐIỀU HƯỚNG TRANG =================
         const navLinks = document.querySelectorAll('.nav-link[data-target]');
@@ -232,6 +446,12 @@
             } else if(pageId === 'page-cap') {
                 topTitle.innerText = "Báo Cáo Cấp Container Rỗng";
                 loadData('ContCap');
+            } else if(pageId === 'page-bai') {
+                topTitle.innerText = "Quản Lý Sơ Đồ Bãi";
+            } else if(pageId === 'page-hangtau') {
+                topTitle.innerText = "Quản Lý Hãng Tàu";
+            } else if(pageId === 'page-users') {
+                topTitle.innerText = "Quản Lý Tài Khoản";
             }
         }
 
@@ -250,7 +470,7 @@
         // ================= HÀM LẤY DỮ LIỆU BẢNG =================
         async function loadData(sheetType) {
             if (API_URL.includes("DÁN_LINK")) {
-                alert("Bạn chưa cấu hình link API_URL trong file HTML!");
+                console.warn("Chưa cấu hình API_URL");
                 return;
             }
 
@@ -263,12 +483,10 @@
 
                 let html = "";
                 data.forEach(row => {
-                    // Dùng mảng ["..."] để gọi đúng các tên cột có dấu và khoảng trắng từ API
                     const soCont = row["Số Container"] || '---';
                     const size = row["Size"] || '---';
                     const lineBadge = getLineBadge(row["Line"]);
                     
-                    // Xử lý và định dạng Ngày nhập bãi
                     let ngayNhap = '---';
                     let rawNgayNhap = row["Ngày nhập bãi"] || row["Ngày Nhập bãi"];
                     if (rawNgayNhap) {
@@ -277,8 +495,6 @@
                     }
 
                     const ghiChu = row["Ghi chú"] || '';
-                    
-                    // Rút gọn ghi chú
                     const shortGhiChu = ghiChu.length > 55 ? ghiChu.substring(0, 55) + "..." : ghiChu;
 
                     if (sheetType === 'ContNhap') {
@@ -289,9 +505,12 @@
                                 <td>${lineBadge}</td>
                                 <td class="text-secondary">${ngayNhap}</td>
                                 <td class="small" title="${ghiChu}">${shortGhiChu}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light border text-primary me-1"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-light border text-danger"><i class="bi bi-trash"></i></button>
+                                </td>
                             </tr>`;
                     } else if (sheetType === 'ContCap') {
-                        // Xử lý Ngày thực hiện (Ngày cấp)
                         let ngayCap = '---';
                         let rawNgayCap = row["Ngày thực hiện"];
                         if (rawNgayCap) {
@@ -307,21 +526,24 @@
                                 <td class="text-secondary small">${ngayNhap}</td>
                                 <td class="text-success fw-bold">${ngayCap}</td>
                                 <td class="small" title="${ghiChu}">${shortGhiChu}</td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light border text-primary me-1"><i class="bi bi-pencil"></i></button>
+                                    <button class="btn btn-sm btn-light border text-danger"><i class="bi bi-trash"></i></button>
+                                </td>
                             </tr>`;
                     }
                 });
 
                 const targetTbody = sheetType === 'ContNhap' ? 'tbody-nhap' : 'tbody-cap';
-                document.getElementById(targetTbody).innerHTML = html || `<tr><td colspan="6" class="text-center">Không có dữ liệu</td></tr>`;
+                document.getElementById(targetTbody).innerHTML = html || `<tr><td colspan="7" class="text-center">Không có dữ liệu</td></tr>`;
                 
-                // Cập nhật số liệu cho Dashboard nếu đang load
                 if (sheetType === 'ContNhap') document.getElementById('dash-nhap-count').innerText = data.length;
                 if (sheetType === 'ContCap') document.getElementById('dash-cap-count').innerText = data.length;
 
             } catch (err) {
                 console.error(err);
                 const targetTbody = sheetType === 'ContNhap' ? 'tbody-nhap' : 'tbody-cap';
-                document.getElementById(targetTbody).innerHTML = `<tr><td colspan="6" class="text-center text-danger">Lỗi kết nối hoặc không tìm thấy Sheet '${sheetType}'</td></tr>`;
+                document.getElementById(targetTbody).innerHTML = `<tr><td colspan="7" class="text-center text-danger">Lỗi kết nối API.</td></tr>`;
             } finally {
                 loading.style.display = 'none';
             }
@@ -329,13 +551,11 @@
 
         // ================= HÀM LẤY SỐ LƯỢNG CHO DASHBOARD =================
         async function loadDashboardStats() {
-            // Tải ngầm dữ liệu để lấy tổng số đếm
-            loadData('ContNhap');
-            loadData('ContCap');
+            if (!API_URL.includes("DÁN_LINK")) {
+                loadData('ContNhap');
+                loadData('ContCap');
+            }
         }
-
-        // Tự động tải Dashboard khi mới mở web
-        window.onload = loadDashboardStats;
     </script>
 </body>
 </html>
