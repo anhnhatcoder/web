@@ -57,11 +57,11 @@
             <form onsubmit="handleLogin(event)">
                 <div class="mb-3">
                     <label class="form-label small fw-bold">Tài khoản</label>
-                    <input type="text" id="username" class="form-control" placeholder="admin / dieudo / nangha / kythuat" required>
+                    <input type="text" id="username" class="form-control" placeholder="Nhập tài khoản" required>
                 </div>
                 <div class="mb-4">
                     <label class="form-label small fw-bold">Mật khẩu</label>
-                    <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu (Test: 123456)" required>
+                    <input type="password" id="password" class="form-control" placeholder="Nhập mật khẩu" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 fw-bold py-2">ĐĂNG NHẬP</button>
             </form>
@@ -131,7 +131,10 @@
                     <div class="col-md-6">
                         <div class="card p-3 shadow-sm">
                             <h6 class="fw-bold text-center">Tỉ lệ Cont Nhập - Cấp</h6>
-                            <canvas id="contChart" height="250"></canvas>
+                            <!-- Đã bọc div có height cố định để fix lỗi Chart.js -->
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="contChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -190,17 +193,32 @@
 
             <!-- TRANG 4: ADMIN - TÀI KHOẢN -->
             <div id="page-users" class="page">
-                <div class="card shadow-sm p-4 text-center">
-                    <i class="bi bi-shield-lock text-primary" style="font-size: 3rem;"></i>
-                    <h5 class="fw-bold mt-2">Quản Lý Phân Quyền</h5>
-                    <p class="text-muted">Chức năng quản lý tài khoản nhân viên (Thêm/Xóa tài khoản) trên Google Sheets.</p>
+                <div class="card shadow-sm p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="fw-bold m-0 text-dark"><i class="bi bi-people me-2"></i>QUẢN LÝ TÀI KHOẢN NHÂN VIÊN</h6>
+                        <button class="btn btn-primary btn-sm" onclick="openUserModal('add')"><i class="bi bi-plus-lg"></i> Thêm Tài Khoản</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Tên đăng nhập</th>
+                                    <th>Mật khẩu</th>
+                                    <th>Họ và Tên</th>
+                                    <th>Vai trò</th>
+                                    <th class="text-center">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-users"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- MODAL ĐỘNG CHO THÊM / SỬA -->
+    <!-- MODAL ĐỘNG CHO THÊM / SỬA CONTAINER -->
     <div class="modal fade" id="dataModal" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -212,14 +230,54 @@
                     <form id="dataForm">
                         <input type="hidden" id="m_type"> <!-- ContNhap hoặc ContCap -->
                         <input type="hidden" id="m_rowIndex">
-                        
-                        <!-- Form fields sẽ được Generate tự động bằng JS -->
                         <div class="row g-3" id="form-fields"></div>
                     </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
                     <button type="button" class="btn btn-primary fw-bold" onclick="saveData()">LƯU HỆ THỐNG</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CHO QUẢN LÝ TÀI KHOẢN -->
+    <div class="modal fade" id="userModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title fw-bold" id="userModalTitle">Cập nhật Tài khoản</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <input type="hidden" id="u_rowIndex">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Tên đăng nhập (Username)</label>
+                            <input type="text" class="form-control" id="u_username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Mật khẩu</label>
+                            <input type="text" class="form-control" id="u_password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Họ và Tên</label>
+                            <input type="text" class="form-control" id="u_hoten" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Vai trò (Role)</label>
+                            <select class="form-select" id="u_role">
+                                <option value="admin">Quản trị viên (Admin)</option>
+                                <option value="dieudo">Điều độ bãi</option>
+                                <option value="nangha">Lái cẩu / Nâng hạ</option>
+                                <option value="kythuat">Kỹ thuật viên (M&R)</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-primary fw-bold" onclick="saveUser()">LƯU TÀI KHOẢN</button>
                 </div>
             </div>
         </div>
@@ -233,22 +291,47 @@
         let currentUser = null;
         let dataNhap = [];
         let dataCap = [];
+        let dataUsers = [];
         let chartInstance = null;
 
         document.getElementById('current-date').innerText = new Date().toLocaleDateString('vi-VN');
         const showLoading = (s) => document.getElementById('loader').style.display = s ? 'flex' : 'none';
 
-        // ================= 1. ĐĂNG NHẬP & PHÂN QUYỀN =================
+        // ================= 1. ĐĂNG NHẬP (Lấy dữ liệu từ Sheet TaiKhoan) =================
         async function handleLogin(e) {
             e.preventDefault();
             const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
             
-            // Phân quyền logic (Giả lập kiểm tra Auth)
-            if(user === "admin") currentUser = { name: "Quản trị viên", role: "admin" };
-            else if(user === "dieudo") currentUser = { name: "Nguyễn Văn Điều Độ", role: "dieudo" };
-            else if(user === "nangha") currentUser = { name: "Lái cẩu Nâng Hạ", role: "nangha" };
-            else if(user === "kythuat") currentUser = { name: "Kỹ sư Sửa chữa", role: "kythuat" };
-            else { alert("Tài khoản không hợp lệ! Vui lòng thử admin/dieudo/nangha/kythuat"); return; }
+            showLoading(true);
+
+            if(API_URL.includes("DÁN_LINK")) {
+                // Đăng nhập giả lập nếu chưa cấu hình API
+                if(user === "admin") currentUser = { name: "Quản trị viên", role: "admin" };
+                else if(user === "dieudo") currentUser = { name: "Nguyễn Văn Điều Độ", role: "dieudo" };
+                else if(user === "nangha") currentUser = { name: "Lái cẩu Nâng Hạ", role: "nangha" };
+                else if(user === "kythuat") currentUser = { name: "Kỹ sư Sửa chữa", role: "kythuat" };
+                else { alert("Vui lòng dán link API_URL để đăng nhập thật, hoặc dùng tài khoản giả lập: admin / dieudo"); showLoading(false); return; }
+            } else {
+                // Xác thực tài khoản thật qua API
+                try {
+                    const res = await fetch(API_URL + "?type=TaiKhoan");
+                    const users = await res.json();
+                    
+                    const found = users.find(u => u.Username === user && u.Password == pass);
+                    if(found) {
+                        currentUser = { name: found.HoTen, role: found.Role };
+                    } else {
+                        alert("Sai tài khoản hoặc mật khẩu!");
+                        showLoading(false);
+                        return;
+                    }
+                } catch (err) {
+                    alert("Lỗi kết nối API khi kiểm tra tài khoản!");
+                    showLoading(false);
+                    return;
+                }
+            }
 
             document.getElementById('user-fullname').innerText = currentUser.name;
             document.getElementById('user-role').innerText = "Vai trò: " + currentUser.role.toUpperCase();
@@ -282,6 +365,7 @@
             
             if(pageId === 'page-cont-nhap') loadData('ContNhap');
             if(pageId === 'page-cont-cap') loadData('ContCap');
+            if(pageId === 'page-users') loadUsers(); // Gọi load dữ liệu Users
         }
 
         // ================= 3. TẢI DỮ LIỆU TỪ GOOGLE SHEETS =================
@@ -289,7 +373,6 @@
             if(API_URL.includes("DÁN_LINK")) return;
             showLoading(true);
             try {
-                // Tải song song 2 bảng
                 const [resNhap, resCap] = await Promise.all([
                     fetch(API_URL + "?type=ContNhap"),
                     fetch(API_URL + "?type=ContCap")
@@ -317,7 +400,7 @@
             showLoading(false);
         }
 
-        // ================= 4. HIỂN THỊ BẢNG (RENDER TABLE) =================
+        // ================= 4. HIỂN THỊ BẢNG CONTAINER =================
         function renderTableNhap() {
             let html = "";
             dataNhap.forEach(row => {
@@ -364,19 +447,17 @@
             document.getElementById('tbody-cap').innerHTML = html || '<tr><td colspan="10" class="text-center">Trống</td></tr>';
         }
 
-        // ================= 5. FORM NHẬP LIỆU ĐỘNG (CRUD) =================
+        // ================= 5. FORM NHẬP LIỆU CONTAINER ĐỘNG =================
         const dataModal = new bootstrap.Modal(document.getElementById('dataModal'));
 
         function openModal(mode, type, rowIndex = null) {
             document.getElementById('m_type').value = type;
             document.getElementById('m_rowIndex').value = rowIndex || "";
             
-            // Đổi màu Header Modal
             const header = document.getElementById('modal-header');
             header.className = type === 'ContNhap' ? "modal-header bg-primary text-white" : "modal-header bg-success text-white";
             document.getElementById('modalTitle').innerText = mode === 'add' ? `Tạo Lệnh (EIR) - ${type}` : `Cập nhật thông tin - ${type}`;
 
-            // Sinh HTML Form dựa trên Bảng
             let formHtml = "";
             let dataRow = null;
             if(mode === 'edit') {
@@ -391,7 +472,6 @@
             fields.forEach((field, index) => {
                 const val = dataRow ? (dataRow[field] || '') : '';
                 
-                // Phân quyền sửa chữa (Khóa field nếu không đúng nghiệp vụ)
                 let readonly = "";
                 if(mode === 'edit' && currentUser.role !== 'admin') {
                     if(currentUser.role === 'nangha' && field !== 'Bãi') readonly = "readonly";
@@ -433,7 +513,7 @@
                 setTimeout(() => { 
                     alert("Đã lưu thành công vào Hệ thống!"); 
                     loadData(type); 
-                    if(type==='ContNhap') initDashboard(); // Cập nhật chart
+                    if(type==='ContNhap') initDashboard();
                 }, 1500);
             } catch(e) { alert("Lỗi khi lưu!"); showLoading(false); }
         }
@@ -447,10 +527,101 @@
             } catch(e) { showLoading(false); }
         }
 
-        // ================= 6. VẼ BIỂU ĐỒ & XUẤT EXCEL =================
+        // ================= 6. QUẢN LÝ TÀI KHOẢN (ADMIN) =================
+        const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+
+        async function loadUsers() {
+            showLoading(true);
+            try {
+                const res = await fetch(API_URL + "?type=TaiKhoan");
+                dataUsers = await res.json();
+                renderTableUsers();
+            } catch (e) { console.error(e); }
+            showLoading(false);
+        }
+
+        function renderTableUsers() {
+            let html = "";
+            dataUsers.forEach(row => {
+                let badgeClass = "bg-secondary";
+                let roleName = row["Role"];
+                if(row["Role"] === "admin") { badgeClass = "bg-danger"; roleName = "Quản trị viên"; }
+                if(row["Role"] === "dieudo") { badgeClass = "bg-primary"; roleName = "Điều độ bãi"; }
+                if(row["Role"] === "nangha") { badgeClass = "bg-success"; roleName = "Nâng hạ"; }
+                if(row["Role"] === "kythuat") { badgeClass = "bg-warning text-dark"; roleName = "Kỹ thuật"; }
+
+                html += `<tr>
+                    <td class="fw-bold">${row["Username"] || ''}</td>
+                    <td>***</td>
+                    <td>${row["HoTen"] || ''}</td>
+                    <td><span class="badge ${badgeClass}">${roleName}</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-primary" onclick="openUserModal('edit', ${row.rowIndex})"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger ms-1" onclick="deleteUser(${row.rowIndex})"><i class="bi bi-trash"></i></button>
+                    </td>
+                </tr>`;
+            });
+            document.getElementById('tbody-users').innerHTML = html || '<tr><td colspan="5" class="text-center">Trống</td></tr>';
+        }
+
+        function openUserModal(mode, rowIndex = null) {
+            document.getElementById('userForm').reset();
+            document.getElementById('u_rowIndex').value = rowIndex || "";
+            document.getElementById('userModalTitle').innerText = mode === 'add' ? 'Thêm Tài Khoản' : 'Sửa Tài Khoản';
+
+            if(mode === 'edit') {
+                const user = dataUsers.find(r => r.rowIndex === rowIndex);
+                if(user) {
+                    document.getElementById('u_username').value = user["Username"] || "";
+                    document.getElementById('u_password').value = user["Password"] || "";
+                    document.getElementById('u_hoten').value = user["HoTen"] || "";
+                    document.getElementById('u_role').value = user["Role"] || "dieudo";
+                }
+            }
+            userModal.show();
+        }
+
+        async function saveUser() {
+            const rowIndex = document.getElementById('u_rowIndex').value;
+            // Cấu trúc Mảng phải đúng với 4 cột trên Sheet TaiKhoan
+            const rowData = [
+                document.getElementById('u_username').value,
+                document.getElementById('u_password').value,
+                document.getElementById('u_hoten').value,
+                document.getElementById('u_role').value
+            ];
+
+            const payload = {
+                sheetType: "TaiKhoan",
+                action: rowIndex ? "update" : "add",
+                rowIndex: rowIndex ? parseInt(rowIndex) : null,
+                data: rowData
+            };
+
+            showLoading(true);
+            try {
+                await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify(payload) });
+                userModal.hide();
+                setTimeout(() => { alert("Lưu tài khoản thành công!"); loadUsers(); }, 1500);
+            } catch(e) { alert("Lỗi khi lưu tài khoản!"); showLoading(false); }
+        }
+
+        async function deleteUser(rowIndex) {
+            if(!confirm("Cảnh báo: Bạn có chắc chắn muốn xóa tài khoản này?")) return;
+            showLoading(true);
+            try {
+                await fetch(API_URL, { method: "POST", mode: "no-cors", body: JSON.stringify({ sheetType: "TaiKhoan", action: "delete", rowIndex: rowIndex }) });
+                setTimeout(() => { loadUsers(); }, 1500);
+            } catch(e) { showLoading(false); }
+        }
+
+        // ================= 7. VẼ BIỂU ĐỒ & XUẤT EXCEL =================
         function drawChart() {
-            document.getElementById('dash-nhap').innerText = dataNhap.length;
-            document.getElementById('dash-cap').innerText = dataCap.length;
+            const lenNhap = dataNhap ? dataNhap.length : 0;
+            const lenCap = dataCap ? dataCap.length : 0;
+            
+            document.getElementById('dash-nhap').innerText = lenNhap;
+            document.getElementById('dash-cap').innerText = lenCap;
 
             const ctx = document.getElementById('contChart').getContext('2d');
             if(chartInstance) chartInstance.destroy();
@@ -459,7 +630,7 @@
                 data: {
                     labels: ['Tồn bãi (Chưa cấp)', 'Đã Cấp (Xuất bãi)'],
                     datasets: [{
-                        data: [dataNhap.length, dataCap.length],
+                        data: [lenNhap, lenCap],
                         backgroundColor: ['#0d47a1', '#28a745']
                     }]
                 },
@@ -469,7 +640,7 @@
 
         function exportExcel(type) {
             const data = type === 'ContNhap' ? dataNhap : dataCap;
-            if(!data.length) return alert("Không có dữ liệu để xuất");
+            if(!data || !data.length) return alert("Không có dữ liệu để xuất");
             
             let csv = "";
             const keys = Object.keys(data[0]).filter(k => k !== 'rowIndex');
