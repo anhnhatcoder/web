@@ -263,12 +263,20 @@
 
                 let html = "";
                 data.forEach(row => {
-                    // Dùng biến đúng với tên cột ở Bước 1
-                    const soCont = row.SoContainer || '---';
-                    const size = row.Size || '---';
-                    const lineBadge = getLineBadge(row.Line);
-                    const ngayNhap = row.NgayNhap || '---';
-                    const ghiChu = row.GhiChu || '';
+                    // Dùng mảng ["..."] để gọi đúng các tên cột có dấu và khoảng trắng từ API
+                    const soCont = row["Số Container"] || '---';
+                    const size = row["Size"] || '---';
+                    const lineBadge = getLineBadge(row["Line"]);
+                    
+                    // Xử lý và định dạng Ngày nhập bãi
+                    let ngayNhap = '---';
+                    let rawNgayNhap = row["Ngày nhập bãi"] || row["Ngày Nhập bãi"];
+                    if (rawNgayNhap) {
+                        const d = new Date(rawNgayNhap);
+                        ngayNhap = !isNaN(d) ? d.toLocaleString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : rawNgayNhap;
+                    }
+
+                    const ghiChu = row["Ghi chú"] || '';
                     
                     // Rút gọn ghi chú
                     const shortGhiChu = ghiChu.length > 55 ? ghiChu.substring(0, 55) + "..." : ghiChu;
@@ -283,7 +291,14 @@
                                 <td class="small" title="${ghiChu}">${shortGhiChu}</td>
                             </tr>`;
                     } else if (sheetType === 'ContCap') {
-                        const ngayCap = row.NgayCap || '---';
+                        // Xử lý Ngày thực hiện (Ngày cấp)
+                        let ngayCap = '---';
+                        let rawNgayCap = row["Ngày thực hiện"];
+                        if (rawNgayCap) {
+                            const d = new Date(rawNgayCap);
+                            ngayCap = !isNaN(d) ? d.toLocaleString('vi-VN', {day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : rawNgayCap;
+                        }
+
                         html += `
                             <tr>
                                 <td class="ps-4 fw-bold text-dark">${soCont}</td>
